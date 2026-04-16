@@ -1,18 +1,22 @@
-# KB: Validate IBM MQ Prometheus Metrics with Elastic Agent in Docker
+# KB: IBM MQ + Elastic Agent Docker Validation
 
-## Summary
+## What this validates
 
-This KB describes how to validate IBM MQ metric ingestion end-to-end using Docker.
+This procedure confirms the full metrics flow:
 
-Validated flow:
+1. IBM MQ exposes Prometheus metrics on port `9157`
+2. Elastic Agent enrolls to Fleet
+3. Metrics are written to Elasticsearch
 
-1. IBM MQ exposes Prometheus metrics on port 9157.
-2. Elastic Agent enrolls with Fleet.
-3. Metrics are ingested into Elasticsearch.
+## Prerequisites
 
-## Steps
+- Docker is running
+- Fleet URL and enrollment token are available
+- Elasticsearch endpoint and credentials are available
 
-1. Export required environment variables.
+## Quick Steps
+
+1. Set environment variables
 
 ```bash
 export FLEET_URL="https://<your-fleet-url>:443"
@@ -22,32 +26,33 @@ export ELASTICSEARCH_USERNAME="elastic"
 export ELASTICSEARCH_PASSWORD="<your-password>"
 ```
 
-2. Start the test stack.
+2. Start IBM MQ + Elastic Agent
 
 ```bash
 bash ./test-ibmmq-prometheus.sh
 ```
 
-3. Validate end-to-end status.
+3. Run validation checks
 
 ```bash
 bash ./validate-ibmmq-integration.sh
 ```
 
-4. Confirm key outcomes.
-- `http://localhost:9157/metrics` is reachable.
-- `ibmmq_*` metrics exist at the exporter endpoint.
-- Elastic Agent reports healthy and connected state.
-- IBM MQ metrics documents are visible in Elasticsearch.
+## Expected results
 
-5. Stop containers when done.
+- `http://localhost:9157/metrics` is reachable
+- `ibmmq_*` metrics are present
+- Elastic Agent is healthy and connected
+- IBM MQ metrics documents exist in Elasticsearch
+
+## Stop and cleanup
 
 ```bash
 docker stop ibmmq-test elastic-agent-test
 ```
 
-## Troubleshooting quick notes
+## Common issues
 
-- Missing `FLEET_URL` or `FLEET_ENROLLMENT_TOKEN`: script exits with a clear error.
-- Prometheus endpoint unreachable: check IBM MQ container status and port mapping.
-- No data in Elasticsearch: verify output credentials, endpoint, and Fleet enrollment state.
+- Missing `FLEET_URL` or `FLEET_ENROLLMENT_TOKEN`: the startup script exits immediately
+- `9157/metrics` not reachable: check IBM MQ container status and port mapping
+- No documents in Elasticsearch: verify ES URL/credentials and Fleet enrollment
