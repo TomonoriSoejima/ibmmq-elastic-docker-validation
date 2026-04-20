@@ -1,6 +1,16 @@
 # IBM MQ + Elastic Agent Docker Validation
 
-Public example scripts to validate IBM MQ Prometheus metric collection with Elastic Agent in Docker.
+Public example scripts to validate IBM MQ metric collection with Elastic Agent in Docker.
+
+**No Prometheus server required.** IBM MQ exposes metrics in Prometheus format directly on port `9157`. Elastic Agent scrapes that endpoint and ships data to Elasticsearch.
+
+```
+IBM MQ container  →  :9157/metrics  →  Elastic Agent  →  Elasticsearch
+```
+
+This is enabled by setting `MQ_ENABLE_METRICS=true` on the IBM MQ container. The IBM MQ integration UI refers to this URL as the "Prometheus endpoint" — it means the metrics URL, not a separate Prometheus server.
+
+> **Note:** This `/metrics` endpoint is only available when IBM MQ runs as a container. Non-containerized IBM MQ does not expose this endpoint, so queue manager metrics will not work with this integration.
 
 ## What this repository contains
 
